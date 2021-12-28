@@ -5,8 +5,8 @@ import { unpkgPathPlugin } from "./plugins/unpkg-path-plugin";
 import { fetchPlugin } from "./plugins/fetch-plugin";
 const App = () => {
   const [input, setInput] = useState("");
-  const [code, setCode] = useState("");
   const ref = useRef<any>();
+  const iframeRef = useRef<any>();
 
   const startService = async () => {
     // API for esbuild has changed for 0.9.0
@@ -14,7 +14,7 @@ const App = () => {
     ref.current = await esbuild.startService({
       worker: true,
       // wasmURL: "/esbuild.wasm",
-			wasmURL: "https://unpkg.com/esbuild-wasm@0.8.27/esbuild.wasm",
+      wasmURL: "https://unpkg.com/esbuild-wasm@0.8.27/esbuild.wasm",
     });
   };
 
@@ -24,6 +24,9 @@ const App = () => {
 
   const onClick = async () => {
     if (!ref.current) return;
+
+    iframeRef.current.srcdoc = html; // reset html in the iframe
+
     // const result = await ref.current.transform(input, {
     // 	loader: 'jsx',
     // 	target: 'es2015'
@@ -38,9 +41,27 @@ const App = () => {
         global: "window",
       },
     });
-    // console.log(result);
-    setCode(result.outputFiles[0].text);
+    iframeRef.current.contentWindow.postMessage(result.outputFiles[0].text, '*'); // triggers `message` event on window object of iframe
   };
+  const html = `
+    <html>
+      <head></head>
+      <body>
+        <div id="root"></div>
+        <script>
+          window.addEventListener('message', e => {
+            try {
+              eval(e.data);
+            } catch (err) {
+              let root = document.querySelector('#root');
+              root.innerHTML = '<div style="color: red;"><h4>' + err + '</h4></div>';
+              console.error(err);
+            }
+          }, false);
+        </script>
+      </body>
+    </html>
+  `;
   return (
     <div>
       <textarea
@@ -50,7 +71,7 @@ const App = () => {
       <div>
         <button onClick={onClick}>Submit</button>
       </div>
-      <pre>{code}</pre>
+      <iframe title="preview" srcDoc={html} sandbox="allow-scripts" ref={iframeRef}></iframe>
     </div>
   );
 };

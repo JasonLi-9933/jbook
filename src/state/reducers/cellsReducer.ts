@@ -40,7 +40,7 @@ const _reducer = (state: CellsState = initialState, action: Action) => {
 			state.order[targetIndex] = action.payload.id;
       return;
 
-    case ActionType.INSERT_CELL_BEFORE:
+    case ActionType.INSERT_CELL_AFTER:
 			const newCell: Cell = {
 				id: randomId(),
 				type: action.payload.type,
@@ -50,9 +50,9 @@ const _reducer = (state: CellsState = initialState, action: Action) => {
 
       const i = state.order.findIndex((id) => id === action.payload.id);
 			if (i < 0) {
-				state.order.push(newCell.id);
+				state.order.unshift(newCell.id);
 			} else {
-				state.order.splice(i, 0, newCell.id);
+				state.order.splice(i+1, 0, newCell.id);
 			}
       return;
     default:

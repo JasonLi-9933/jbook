@@ -44,13 +44,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ initialValue, onChange }) => {
     <div className="editor-wrapper">
       <button
         onClick={onFormatClick}
-        className="button button-format is-primary is-small"
+        className="button button-format is-primary is-small button-hide"
       >
         Format
       </button>
       <button
         onClick={onResetClick}
-        className="button button-reset is-link is-small"
+        className="button button-reset is-link is-small button-hide"
       >
         Reset
       </button>

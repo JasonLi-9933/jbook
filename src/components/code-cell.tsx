@@ -38,9 +38,6 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
             onChange={(value) => updateCell(cell.id, value)}
           />
         </Resizable>
-        {/* <div>
-          <button onClick={onClick}>Submit</button>
-        </div> */}
         <Preview code={code} bundlingErrorMessage={err} />
       </div>
     </Resizable>

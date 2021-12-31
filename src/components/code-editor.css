@@ -23,10 +23,12 @@
 
 .editor-wrapper:hover .button-format {
   opacity: 1;
-  width: 4rem;
 }
 
 .editor-wrapper:hover .button-reset {
   opacity: 1;
+}
+
+.button-hide {
   width: 4rem;
 }

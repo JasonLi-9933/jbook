@@ -6,12 +6,6 @@ const fileCache = localforage.createInstance({
   name: "fileCache",
 });
 
-(async () => {
-  await fileCache.setItem("color", "red");
-  const color = await fileCache.getItem("color");
-  console.log(color);
-})();
-
 export const fetchPlugin = (inputCode: string) => {
   return {
     name: "fetch-plugin",
@@ -24,15 +18,17 @@ export const fetchPlugin = (inputCode: string) => {
         };
       });
 
-		build.onLoad({filter: /.*/}, async (args: any) => {
-			const cachedResult = await fileCache.getItem<esbuild.OnLoadResult>(
-				args.path
-			);
-			if (cachedResult) {
-				return cachedResult; // will not trigger any other onLoad callbacks
-			}
-			return null; // it is ok to return null, esbuild will trigger other callbacks
-		})
+      build.onLoad({ filter: /.*/ }, async (args: any) => {
+        // the purpose of this callback is try to get data from local cache first
+        // before making a http(s) request to fetch the data
+        const cachedResult = await fileCache.getItem<esbuild.OnLoadResult>(
+          args.path
+        );
+        if (cachedResult) {
+          return cachedResult; // will not trigger any other onLoad callbacks
+        }
+        return null; // it is ok to return null, esbuild will trigger other callbacks
+      });
 
       build.onLoad({ filter: /.css$/ }, async (args: any) => {
         const { data, request } = await axios.get(args.path);

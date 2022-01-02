@@ -2,7 +2,7 @@ import { useTypedSelector } from "../hooks/use-typed-selector";
 import CellListItem from "./cell-list-item";
 import AddCell from "./add-cell";
 import { Fragment, useRef } from "react";
-
+import './cell-list.css';
 const CellList: React.FC = () => {
   const listRef = useRef<HTMLDivElement>(null);
 
